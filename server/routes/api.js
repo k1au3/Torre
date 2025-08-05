@@ -32,17 +32,19 @@ router.post('/job-search', async (req, res) => {
       }
     });
 
+    // Update the job location mapping
     const jobs = (response.data.results || []).map(job => ({
       id: job.id,
       objective: job.objective,
       type: job.type,
       remote: job.remote,
-      location: job.locations?.[0] || 'Remote',
+      // Fix: Extract location name instead of full object
+      location: job.locations?.[0]?.name || 'Unknown',
       organization: job.organizations?.[0] || {},
       skills: job.skills || [],
       compensation: job.compensation,
       deadline: job.deadline
-    }));
+}));
 
     res.json(jobs);
   } catch (error) {
