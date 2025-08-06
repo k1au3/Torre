@@ -93,16 +93,16 @@ router.post('/job-search', async (req, res) => {
     
     // Handle different error scenarios
     if (error.response) {
-      // Torre API error response
+      // TalentMatch API error response
       res.status(error.response.status).json({ 
-        error: 'Torre API error',
+        error: 'TalentMatch API error',
         details: error.response.data 
       });
     } else if (error.request) {
       // No response received
       res.status(504).json({ 
-        error: 'Torre API request timeout',
-        details: 'No response received from Torre API'
+        error: 'TalentMatch API request timeout',
+        details: 'No response received from TalentMatch API'
       });
     } else {
       // Other errors
@@ -138,18 +138,18 @@ router.get('/genome/:username', async (req, res) => {
       if (error.response.status === 404) {
         res.status(404).json({ 
           error: 'User not found',
-          details: 'The requested username does not exist on Torre'
+          details: 'The requested username does not exist on TalentMatch'
         });
       } else {
         res.status(error.response.status).json({ 
-          error: 'Torre API error',
+          error: 'TalentMatch API error',
           details: error.response.data 
         });
       }
     } else if (error.request) {
       res.status(504).json({ 
-        error: 'Torre API request timeout',
-        details: 'No response received from Torre API'
+        error: 'TalentMatch API request timeout',
+        details: 'No response received from TalentMatch API'
       });
     } else {
       res.status(500).json({ 

@@ -2,15 +2,15 @@ require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const path = require('path');
-const apiRoutes = require('./routes/api');
+const apiRoutes = require('./routes/api'); 
 
 const app = express();
 
 // CORS configuration
 const corsOptions = {
   origin: [
-    'https://tallent-match-beta.vercel.app', // Your Vercel frontend
-    'http://localhost:3000' // For local development
+    process.env.CLIENT_URL, 
+    'http://localhost:3000' 
   ],
   methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
   credentials: true,
@@ -20,16 +20,30 @@ const corsOptions = {
 app.use(cors(corsOptions));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use((req, res, next) => {
+  // Basic security headers
+  res.setHeader('X-Content-Type-Options', 'nosniff');
+  res.setHeader('X-Frame-Options', 'DENY');
+  
+  if (process.env.ENABLE_HSTS === 'true') {
+    res.setHeader('Strict-Transport-Security', 'max-age=31536000; includeSubDomains');
+  }
+  
+  if (process.env.CONTENT_SECURITY_POLICY) {
+    res.setHeader('Content-Security-Policy', process.env.CONTENT_SECURITY_POLICY);
+  }
+  next();
+});
 
 // API routes
 app.use('/api', apiRoutes);
 
-// Production: Serve React build
+
 if (process.env.NODE_ENV === 'production') {
   app.use(express.static(path.join(__dirname, 'client/build')));
   
-  // Handle React routing
-  app.get('*', (req, res) => {
+ 
+  app.get('/*', (req, res) => {
     res.sendFile(path.join(__dirname, 'client/build', 'index.html'));
   });
 }
